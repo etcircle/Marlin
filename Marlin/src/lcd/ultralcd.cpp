@@ -86,6 +86,10 @@ MarlinUI ui;
   }
 #endif
 
+#if PREHEAT_COUNT
+  preheat_t MarlinUI::material_preset[PREHEAT_COUNT];  // Initialized by settings.load()
+#endif
+
 #if HAS_SPI_LCD
 
 #if HAS_GRAPHICAL_LCD
@@ -110,6 +114,10 @@ MarlinUI ui;
 
 #if HAS_ADC_BUTTONS
   #include "../module/thermistor/thermistors.h"
+#endif
+
+#if HAS_POWER_MONITOR
+  #include "../feature/power_monitor.h"
 #endif
 
 #if HAS_ENCODER_ACTION
@@ -533,7 +541,6 @@ void MarlinUI::status_screen() {
   #endif // LCD_PROGRESS_BAR
 
   #if HAS_LCD_MENU
-
     if (use_click()) {
       #if BOTH(FILAMENT_LCD_DISPLAY, SDSUPPORT)
         next_filament_display = millis() + 5000UL;  // Show status message for 5s
@@ -630,12 +637,12 @@ void MarlinUI::quick_feedback(const bool clear_buttons/*=true*/) {
 
 #if HAS_LCD_MENU
 
-  int8_t manual_move_axis = (int8_t)NO_AXIS;
-  millis_t manual_move_start_time = 0;
+  int8_t MarlinUI::manual_move_axis = (int8_t)NO_AXIS;
+  millis_t MarlinUI::manual_move_start_time = 0;
 
   #if IS_KINEMATIC
     bool MarlinUI::processing_manual_move = false;
-    float manual_move_offset = 0;
+    float MarlinUI::manual_move_offset = 0;
   #endif
 
   #if MULTI_MANUAL
@@ -898,8 +905,8 @@ void MarlinUI::update() {
       }
     #endif
 
-    // then we want to use 1/2 of the time only.
-    uint16_t bbr2 = planner.block_buffer_runtime() >> 1;
+    // Then we want to use only 50% of the time
+    const uint16_t bbr2 = planner.block_buffer_runtime() >> 1;
 
     if ((should_draw() || drawing_screen) && (!bbr2 || bbr2 > max_display_update_time)) {
 
