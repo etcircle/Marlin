@@ -3484,7 +3484,7 @@
 
 // // @section develop
 
-// //
+// //DEFAULT_AXIS_STEPS_PER_UNIT
 // // M100 Free Memory Watcher to debug memory usage
 // //
 // //#define M100_FREE_MEMORY_WATCHER
